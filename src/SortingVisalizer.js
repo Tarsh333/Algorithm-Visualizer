@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { BiSort } from 'react-icons/bi'
 import { AiFillPlayCircle } from 'react-icons/ai'
+import {RiCheckboxBlankFill} from 'react-icons/ri'
 import theory from './theory'
 const SortingVisalizer = () => {
   const [array, setArray] = useState([])
@@ -8,7 +9,11 @@ const SortingVisalizer = () => {
   const [algo, setAlgo] = useState(theory[0])
   const [startSorting, setStartSorting] = useState(false)
   const [animationSpeed, setAnimationSpeed] = useState(300)
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [temp, setTemp] = useState(array[1])
+  window.addEventListener("resize", ()=>{
+    setWindowWidth(window.innerWidth);
+  });
   useEffect(() => {
     randomizeArray()
   }, [])
@@ -39,7 +44,12 @@ const SortingVisalizer = () => {
   };
 
 
-
+  useEffect(() => {
+    
+    if (windowWidth<750 && arraySize==='25') {
+     setArraySize(10)
+    }
+  }, [windowWidth])
   // Bubble Sort
   const bubbleSort = async () => {
     setStartSorting(true)
@@ -247,7 +257,7 @@ const SortingVisalizer = () => {
     insertionSort,
     quickSort
   }
-  const sizeArray = [5, 10, 25]
+  const sizeArray = windowWidth>750?[5, 10, 25]:[5,10]
   return (
     <div>
       <h1>Sorting Visualizer <BiSort /></h1>
@@ -266,7 +276,7 @@ const SortingVisalizer = () => {
             })}
           </select>
         </div>
-        <button disabled={startSorting} onClick={randomizeArray}>Randomize</button>
+        <button className="randomize-btn" disabled={startSorting} onClick={randomizeArray}>Randomize</button>
       </div>
       <div className='bars'>
         {array.map((size, id) => {
@@ -278,7 +288,7 @@ const SortingVisalizer = () => {
 
           {Object.keys(algo.colours).map((color, key) => {
             return <div key={key} className='color-cont'>
-              <div style={{ backgroundColor: color }} className='color'></div>
+              <div style={{ color: color }} className='color'><RiCheckboxBlankFill/></div>
               <div>{algo.colours[color]}</div>
             </div>
           })}
@@ -286,7 +296,7 @@ const SortingVisalizer = () => {
         <div>
           <button onClick={() => { Handler[`${camelize(algo.name)}`]() }} disabled={startSorting}><AiFillPlayCircle /></button>
         </div>
-        <div>Avg Time Complexity: {algo.timeComp} <br /> Space Complexity: {algo.spaceComp}</div>
+        <div>Avg Time Complexity: <br/>{algo.timeComp} <br /><br/> Space Complexity: <br/>{algo.spaceComp}</div>
       </div>
     </div>
   )
