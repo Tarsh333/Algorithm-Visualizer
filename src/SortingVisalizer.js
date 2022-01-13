@@ -1,0 +1,295 @@
+import React, { useEffect, useState } from 'react'
+import { BiSort } from 'react-icons/bi'
+import { AiFillPlayCircle } from 'react-icons/ai'
+import theory from './theory'
+const SortingVisalizer = () => {
+  const [array, setArray] = useState([])
+  const [arraySize, setArraySize] = useState(10)
+  const [algo, setAlgo] = useState(theory[0])
+  const [startSorting, setStartSorting] = useState(false)
+  const [animationSpeed, setAnimationSpeed] = useState(300)
+  const [temp, setTemp] = useState(array[1])
+  useEffect(() => {
+    randomizeArray()
+  }, [])
+  useEffect(() => {
+    randomizeArray()
+  }, [arraySize])
+  const randomizeArray = () => {
+    for (var i = 0; i < array.length; i++) {
+      var bar = document.getElementById(i).style;
+      bar.backgroundColor = "#343434";
+    }
+    var temparray = [];
+    for (var j = 0; j < arraySize; j++) {
+      temparray.push(randomVals(20, 400));
+    }
+    setArray(temparray);
+  }
+
+  // Generates a random val between min and max
+  const randomVals = (min, max) => {
+    var randomVal = Math.floor(Math.random() * (max - min + 1) + min);
+    return randomVal;
+  }
+
+  // Delay function 
+  const delay = (time) => {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  };
+
+
+
+  // Bubble Sort
+  const bubbleSort = async () => {
+    setStartSorting(true)
+    var currentArr = [...array];
+
+    var sorted = false;
+    while (!sorted) {
+      sorted = true;
+
+      for (var i = 0; i < currentArr.length - 1; i++) {
+        let bar1 = document.getElementById(i).style;
+        let bar2 = document.getElementById(i + 1).style;
+        bar1.backgroundColor = "green"
+        bar2.backgroundColor = "green"
+        await delay(animationSpeed);
+        if (currentArr[i] > currentArr[i + 1]) {
+          var swap1 = currentArr[i];
+          var swap2 = currentArr[i + 1];
+          currentArr[i] = swap2;
+          currentArr[i + 1] = swap1;
+          setArray([...currentArr]);
+          await delay(2 * animationSpeed);
+
+          sorted = false;
+        }
+        //Change back the Style back to original
+        bar1.backgroundColor = "#343434";
+        bar2.backgroundColor = "#343434";
+        await delay(animationSpeed);
+      }
+    }
+    setStartSorting(false)
+  }
+
+  // Merge Sort
+  const merge = async (arr, left, right) => {
+    document.getElementById(left).style.backgroundColor = "orange"
+    document.getElementById(right).style.backgroundColor = "orange"
+    await delay(2000)
+    var mid = Math.floor((left + right) / 2);
+    var indexOfLeftPart = left;
+    var indexOfRightPart = mid + 1;
+    var tempArr = [];
+
+    while (indexOfLeftPart <= mid && indexOfRightPart <= right) {
+      if (arr[indexOfLeftPart] < arr[indexOfRightPart]) {
+        tempArr.push(arr[indexOfLeftPart]);
+        indexOfLeftPart++;
+      }
+      else {
+        tempArr.push(arr[indexOfRightPart]);
+        indexOfRightPart++;
+      }
+    }
+    while (indexOfRightPart <= right) {
+      tempArr.push(arr[indexOfRightPart]);
+      indexOfRightPart++;
+    }
+    while (indexOfLeftPart <= mid) {
+      tempArr.push(arr[indexOfLeftPart]);
+      indexOfLeftPart++;
+    }
+    var t = 0;
+    for (var j = left; j <= right; j++) {
+      arr[j] = tempArr[t];
+      t++;
+    }
+    setArray([...arr])
+    await delay(2000)
+
+  }
+  const mergeSortHelper = async (arr, left, right) => {
+    if (left < right) {
+      var mid = Math.floor((left + right) / 2);
+      mergeSortHelper(arr, left, mid);
+      mergeSortHelper(arr, mid + 1, right);
+
+      merge(arr, left, right);
+
+    }
+  }
+  const mergeSort = async () => {
+    setStartSorting(true)
+    var arrayRef = [...array]
+    mergeSortHelper(arrayRef, 0, array.length - 1)
+    setStartSorting(false)
+  }
+
+  // Selection Sort
+  const selectionSort = async () => {
+    setStartSorting(true)
+    var tempArr = [...array]
+    for (let i = 0; i < tempArr.length - 1; i++) {
+      var min = i
+      var j
+      for (j = i; j < tempArr.length; j++) {
+        document.getElementById(j).style.backgroundColor = "green";
+        await delay(animationSpeed)
+        if (tempArr[j] <= tempArr[min]) {
+          document.getElementById(min).style.backgroundColor = "#343434";
+          document.getElementById(j).style.backgroundColor = "blue";
+          await delay(animationSpeed)
+          min = j
+        }
+        else {
+          document.getElementById(j).style.backgroundColor = "#343434";
+        }
+      }
+      let bar1 = document.getElementById(i).style;
+      await delay(2 * animationSpeed)
+      var temp = tempArr[min]
+      tempArr[min] = tempArr[i]
+      tempArr[i] = temp
+      document.getElementById(min).style.backgroundColor = "#343434"
+      setArray([...tempArr])
+      bar1.backgroundColor = "orange"
+      await delay(2 * animationSpeed)
+    }
+    setStartSorting(false)
+  }
+
+  // Insertion Sort
+  const insertionSort = async () => {
+    setStartSorting(true)
+    var tempArr = [...array]
+    document.getElementById(0).style.backgroundColor = "orange"
+    for (let i = 1; i < tempArr.length; i++) {
+      setTemp(tempArr[i])
+      let temp = tempArr[i];
+      var j
+      for (j = i - 1; j >= 0; j--) {
+        document.getElementById(j).style.backgroundColor = "green"
+        await delay(2 * animationSpeed)
+        if (tempArr[j] > temp) {
+          tempArr[j + 1] = tempArr[j]
+          setArray([...tempArr])
+          await delay(2 * animationSpeed)
+          document.getElementById(j).style.backgroundColor = "orange"
+        }
+        else {
+          document.getElementById(j).style.backgroundColor = "orange"
+          break;
+        }
+        await delay(animationSpeed)
+      }
+      tempArr[j + 1] = temp;
+      setArray([...tempArr])
+      document.getElementById(i).style.backgroundColor = "orange"
+      await delay(3 * animationSpeed)
+    }
+    setStartSorting(false)
+  }
+
+  // quick sort
+  const quickSortHelper = async(arr, a, b) => {
+    if (b > a) {
+      document.getElementById(a).style.backgroundColor="green"
+      let pivot = getPivot(arr, a, b)
+      await delay(2*animationSpeed)
+      setArray([...arr])
+      document.getElementById(a).style.backgroundColor="#343434"
+      await delay(2*animationSpeed)
+      quickSortHelper(arr, a, pivot - 1)
+      await delay(4*animationSpeed)
+      quickSortHelper(arr, pivot + 1, b)
+    }
+  }
+  const quickSort = () => {
+    setStartSorting(true)
+    let arr = [...array]
+    quickSortHelper(arr, 0, arr.length - 1)
+    setStartSorting(false)
+  }
+  const getPivot = (arr, a, b) => {
+    let pivot = arr[a]
+    var i = a
+    var j = b
+    while (j > i) {
+      while (pivot >= arr[i] && i<=b) {
+        i++
+      }
+      while (pivot < arr[j] && j>=a) {
+        j--
+      }
+      if (j > i) {
+        let temp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = temp
+      }
+    }
+    let temp =pivot
+    arr[a] = arr[j]
+    arr[j] = temp
+    return j
+  }
+  const camelize = (str) => {
+    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+      return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    }).replace(/\s+/g, '');
+  }
+  const Handler = {
+    bubbleSort,
+    selectionSort,
+    mergeSort,
+    insertionSort,
+    quickSort
+  }
+  const sizeArray = [5, 10, 25]
+  return (
+    <div>
+      <h1>Sorting Visualizer <BiSort /></h1>
+      <div className='options'>
+        {algo.name === "Insertion Sort" && <div className='temp'>Temp :{temp}</div>}
+        <div id="algo">
+          {theory.map((algorithm) => {
+            return (<button key={algorithm.name} onClick={() => { setAlgo(algorithm) }} className={algorithm.name === algo.name ? "selected-btn" : undefined} disabled={startSorting}>{algorithm.name}</button>)
+          })}
+        </div>
+        <div className='size-option'>
+          Size :
+          <select id="size" disabled={startSorting} value={arraySize} onChange={(e) => { setArraySize(e.target.value) }}>
+            {sizeArray.map((size, i) => {
+              return (<option key={i} value={size} >{size}</option>)
+            })}
+          </select>
+        </div>
+        <button disabled={startSorting} onClick={randomizeArray}>Randomize</button>
+      </div>
+      <div className='bars'>
+        {array.map((size, id) => {
+          return (<div key={id} className='bar' id={id} style={{ height: size, color: 'white', textAlign: 'center' }}>{size}</div>)
+        })}
+      </div>
+      <div className='info' >
+        <div className='colors'>
+
+          {Object.keys(algo.colours).map((color, key) => {
+            return <div key={key} className='color-cont'>
+              <div style={{ backgroundColor: color }} className='color'></div>
+              <div>{algo.colours[color]}</div>
+            </div>
+          })}
+        </div>
+        <div>
+          <button onClick={() => { Handler[`${camelize(algo.name)}`]() }} disabled={startSorting}><AiFillPlayCircle /></button>
+        </div>
+        <div>Avg Time Complexity: {algo.timeComp} <br /> Space Complexity: {algo.spaceComp}</div>
+      </div>
+    </div>
+  )
+}
+
+export default SortingVisalizer
