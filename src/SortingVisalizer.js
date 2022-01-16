@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { BiSort } from 'react-icons/bi'
 import { AiFillPlayCircle } from 'react-icons/ai'
-import {RiCheckboxBlankFill} from 'react-icons/ri'
+import { RiCheckboxBlankFill } from 'react-icons/ri'
 import theory from './theory'
 const SortingVisalizer = () => {
   const [array, setArray] = useState([])
@@ -11,7 +11,7 @@ const SortingVisalizer = () => {
   const [animationSpeed, setAnimationSpeed] = useState(300)
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [temp, setTemp] = useState(array[1])
-  window.addEventListener("resize", ()=>{
+  window.addEventListener("resize", () => {
     setWindowWidth(window.innerWidth);
   });
   useEffect(() => {
@@ -45,27 +45,28 @@ const SortingVisalizer = () => {
 
 
   useEffect(() => {
-    
-    if (windowWidth<750 && arraySize==='25') {
-     setArraySize(10)
+
+    if (windowWidth < 750 && arraySize === '25') {
+      setArraySize(10)
     }
   }, [windowWidth])
   // Bubble Sort
   const bubbleSort = async () => {
+    let animationSpeed = arraySize == 25 ? 150 : 250
     setStartSorting(true)
     var currentArr = [...array];
 
     var sorted = false;
-    while (!sorted) {
-      sorted = true;
-
-      for (var i = 0; i < currentArr.length - 1; i++) {
+    for (var j = 0; j < currentArr.length - 1; j++) {
+      var swapped=false
+      for (var i = 0; i < currentArr.length - 1 - j; i++) {
         let bar1 = document.getElementById(i).style;
         let bar2 = document.getElementById(i + 1).style;
         bar1.backgroundColor = "green"
         bar2.backgroundColor = "green"
         await delay(animationSpeed);
         if (currentArr[i] > currentArr[i + 1]) {
+          swapped=true
           var swap1 = currentArr[i];
           var swap2 = currentArr[i + 1];
           currentArr[i] = swap2;
@@ -80,15 +81,22 @@ const SortingVisalizer = () => {
         bar2.backgroundColor = "#343434";
         await delay(animationSpeed);
       }
+      if (!swapped) {
+        break;
+      }
+      document.getElementById(currentArr.length - 1 - j).style.backgroundColor="blue"
     }
     setStartSorting(false)
   }
 
   // Merge Sort
   const merge = async (arr, left, right) => {
-    document.getElementById(left).style.backgroundColor = "orange"
-    document.getElementById(right).style.backgroundColor = "orange"
-    await delay(2000)
+    let bars = []
+    for (let index = left; index <= right; index++) {
+      bars.push(document.getElementById(index).style)
+      document.getElementById(index).style.backgroundColor = "orange"
+    }
+    await delay(2 * animationSpeed)
     var mid = Math.floor((left + right) / 2);
     var indexOfLeftPart = left;
     var indexOfRightPart = mid + 1;
@@ -118,28 +126,33 @@ const SortingVisalizer = () => {
       t++;
     }
     setArray([...arr])
-    await delay(2000)
+    await delay(2 * animationSpeed)
 
+    for (let index = 0; index < bars.length; index++) {
+      bars[index].backgroundColor = "#343434"
+    }
   }
   const mergeSortHelper = async (arr, left, right) => {
     if (left < right) {
       var mid = Math.floor((left + right) / 2);
-      mergeSortHelper(arr, left, mid);
-      mergeSortHelper(arr, mid + 1, right);
+      await mergeSortHelper(arr, left, mid);
+      await mergeSortHelper(arr, mid + 1, right);
 
-      merge(arr, left, right);
+      await merge(arr, left, right);
 
     }
   }
   const mergeSort = async () => {
     setStartSorting(true)
     var arrayRef = [...array]
-    mergeSortHelper(arrayRef, 0, array.length - 1)
+    await mergeSortHelper(arrayRef, 0, array.length - 1)
     setStartSorting(false)
   }
 
   // Selection Sort
   const selectionSort = async () => {
+    let animationSpeed = arraySize == 25 ? 150 : 250
+
     setStartSorting(true)
     var tempArr = [...array]
     for (let i = 0; i < tempArr.length - 1; i++) {
@@ -173,6 +186,8 @@ const SortingVisalizer = () => {
 
   // Insertion Sort
   const insertionSort = async () => {
+    let animationSpeed = arraySize == 25 ? 150 : 250
+
     setStartSorting(true)
     var tempArr = [...array]
     document.getElementById(0).style.backgroundColor = "orange"
@@ -204,23 +219,33 @@ const SortingVisalizer = () => {
   }
 
   // quick sort
-  const quickSortHelper = async(arr, a, b) => {
+  const quickSortHelper = async (arr, a, b) => {
     if (b > a) {
-      document.getElementById(a).style.backgroundColor="green"
+      let bars = []
+      for (let index = a; index <= b; index++) {
+        bars.push(document.getElementById(index).style)
+        document.getElementById(index).style.backgroundColor = "orange"
+      }
+      document.getElementById(a).style.backgroundColor = "blue"
+      await delay(2 * animationSpeed)
       let pivot = getPivot(arr, a, b)
-      await delay(2*animationSpeed)
       setArray([...arr])
-      document.getElementById(a).style.backgroundColor="#343434"
-      await delay(2*animationSpeed)
-      quickSortHelper(arr, a, pivot - 1)
-      await delay(4*animationSpeed)
-      quickSortHelper(arr, pivot + 1, b)
+      document.getElementById(a).style.backgroundColor = "orange"
+      document.getElementById(pivot).style.backgroundColor = "blue"
+      await delay(2 * animationSpeed)
+      for (let index = a; index <= b; index++) {
+        bars.push(document.getElementById(index).style)
+        document.getElementById(index).style.backgroundColor = "#343434"
+      }
+      await delay(2 * animationSpeed)
+      await quickSortHelper(arr, a, pivot - 1)
+      await quickSortHelper(arr, pivot + 1, b)
     }
   }
-  const quickSort = () => {
+  const quickSort = async () => {
     setStartSorting(true)
     let arr = [...array]
-    quickSortHelper(arr, 0, arr.length - 1)
+    await quickSortHelper(arr, 0, arr.length - 1)
     setStartSorting(false)
   }
   const getPivot = (arr, a, b) => {
@@ -228,10 +253,10 @@ const SortingVisalizer = () => {
     var i = a
     var j = b
     while (j > i) {
-      while (pivot >= arr[i] && i<=b) {
+      while (pivot >= arr[i] && i <= b) {
         i++
       }
-      while (pivot < arr[j] && j>=a) {
+      while (pivot < arr[j] && j >= a) {
         j--
       }
       if (j > i) {
@@ -240,11 +265,12 @@ const SortingVisalizer = () => {
         arr[j] = temp
       }
     }
-    let temp =pivot
+    let temp = pivot
     arr[a] = arr[j]
     arr[j] = temp
     return j
   }
+
   const camelize = (str) => {
     return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
       return index === 0 ? word.toLowerCase() : word.toUpperCase();
@@ -257,7 +283,7 @@ const SortingVisalizer = () => {
     insertionSort,
     quickSort
   }
-  const sizeArray = windowWidth>750?[5, 10, 25]:[5,10]
+  const sizeArray = windowWidth > 750 ? [5, 10, 25] : [5, 10]
   return (
     <div>
       <h1>Sorting Visualizer <BiSort /></h1>
@@ -288,15 +314,16 @@ const SortingVisalizer = () => {
 
           {Object.keys(algo.colours).map((color, key) => {
             return <div key={key} className='color-cont'>
-              <div style={{ color: color }} className='color'><RiCheckboxBlankFill/></div>
+              <div style={{ color: color }} className='color'><RiCheckboxBlankFill /></div>
               <div>{algo.colours[color]}</div>
             </div>
           })}
         </div>
         <div>
-          <button onClick={() => { Handler[`${camelize(algo.name)}`]() }} disabled={startSorting}><AiFillPlayCircle /></button>
+          {!startSorting ? <button onClick={() => { Handler[`${camelize(algo.name)}`]() }} disabled={startSorting}><AiFillPlayCircle /></button> :
+            <button className='Restart' onClick={() => { window.location.reload() }}>Restart</button>}
         </div>
-        <div>Avg Time Complexity: <br/>{algo.timeComp} <br /><br/> Space Complexity: <br/>{algo.spaceComp}</div>
+        <div>Avg Time Complexity: <br />{algo.timeComp} <br /><br /> Space Complexity: <br />{algo.spaceComp}</div>
       </div>
     </div>
   )

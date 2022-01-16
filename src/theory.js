@@ -4,7 +4,8 @@
         timeComp:"O( n^2 )",
         spaceComp:"O( 1 )",
         colours:{
-            "green":"Elements Being Compared and swapped if required"
+            "green":"Elements Being Compared and swapped if required",
+            "blue":"Sorted Part Of Array"
         }
     },
     {
@@ -33,7 +34,8 @@
         timeComp:"O( nlog ( n ) )",
         spaceComp:"O( log ( n ) )",
         colours:{
-            green:"Pivot Element. Getting this element to its correct position"
+            orange:"Subarray in which pivot is being placed at correct position",
+            blue:"Pivot Element (Element that is being put at its correct position)"
         }
     },
     {
@@ -41,6 +43,7 @@
         timeComp:"O( nlog ( n ) )",
         spaceComp:"O( n )",
         colours:{
+            orange:"subarray being merged"
         }
     }
 ]

@@ -136,3 +136,9 @@ h1{
     } */
 
 }
+.Restart{
+    background-color: #CF303D;
+    color: white!important;
+    font-size: 25px!important;
+    padding: 5px 8px;
+}
