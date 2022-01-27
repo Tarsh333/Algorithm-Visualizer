@@ -11,6 +11,7 @@ const SortingVisalizer = () => {
   const [animationSpeed, setAnimationSpeed] = useState(300)
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [temp, setTemp] = useState(array[1])
+  const [text, setText] = useState("")
   window.addEventListener("resize", () => {
     setWindowWidth(window.innerWidth);
   });
@@ -55,10 +56,8 @@ const SortingVisalizer = () => {
     let animationSpeed = arraySize == 25 ? 150 : 250
     setStartSorting(true)
     var currentArr = [...array];
-
-    var sorted = false;
     for (var j = 0; j < currentArr.length - 1; j++) {
-      var swapped=false
+      var swapped = false
       for (var i = 0; i < currentArr.length - 1 - j; i++) {
         let bar1 = document.getElementById(i).style;
         let bar2 = document.getElementById(i + 1).style;
@@ -66,7 +65,7 @@ const SortingVisalizer = () => {
         bar2.backgroundColor = "green"
         await delay(animationSpeed);
         if (currentArr[i] > currentArr[i + 1]) {
-          swapped=true
+          swapped = true
           var swap1 = currentArr[i];
           var swap2 = currentArr[i + 1];
           currentArr[i] = swap2;
@@ -74,7 +73,6 @@ const SortingVisalizer = () => {
           setArray([...currentArr]);
           await delay(2 * animationSpeed);
 
-          sorted = false;
         }
         //Change back the Style back to original
         bar1.backgroundColor = "#343434";
@@ -84,7 +82,7 @@ const SortingVisalizer = () => {
       if (!swapped) {
         break;
       }
-      document.getElementById(currentArr.length - 1 - j).style.backgroundColor="blue"
+      document.getElementById(currentArr.length - 1 - j).style.backgroundColor = "blue"
     }
     setStartSorting(false)
   }
@@ -271,6 +269,94 @@ const SortingVisalizer = () => {
     return j
   }
 
+  const heapSort = async () => {
+    let animationSpeed = arraySize == 25 ? 130 : 250
+    var arr = [...array];
+    setStartSorting(true)
+    var length = arr.length;
+    var index = Math.floor(length / 2 - 1);
+    var lastChild = length - 1;
+    while (index >= 0) {
+      await heapify(arr, length, index);
+      index--;
+    }
+    while (lastChild >= 0) {
+      // Delete Operation
+      setText("Deleting the largest element (Pushing the largest element to the end)")
+      var swap1 = arr[0];
+      var swap2 = arr[lastChild];
+      
+      arr[0] = swap2;
+      arr[lastChild] = swap1;
+      setArray([...arr]);
+      document.getElementById(lastChild).style.backgroundColor="green"
+      await delay(animationSpeed*2)
+      await heapify(arr, lastChild, 0);
+      lastChild--;
+      await delay(animationSpeed)
+    }
+    setStartSorting(false)
+  }
+
+  const heapify = async (arr, length, index) => {
+    let animationSpeed = arraySize == 25 ? 130 : 250
+    setText(`Heapifying ${arr[index]}`)
+    var largest = index;
+    //Left Child
+    var leftNode = index * 2 + 1;
+    //Right Child
+    var rightNode = leftNode + 1;
+    document.getElementById(index).style.backgroundColor = "yellow"
+    if (leftNode < length) {
+      document.getElementById(leftNode).style.backgroundColor = "orange"
+    }
+    if (rightNode < length) {
+      document.getElementById(rightNode).style.backgroundColor = "orange"
+    }
+
+    //Check if left is largest, check if reached end
+    if (leftNode < length && arr[leftNode] > arr[largest]) {
+      largest = leftNode;
+    }
+
+    //Check if right is largest, check if reached end
+    if (rightNode < length && arr[rightNode] > arr[largest]) {
+      largest = rightNode;
+    }
+
+    //Check if parent is still largest, if not: perform a swap between the smallest and the largest
+    if (largest != index) {
+      var swap1 = arr[index];
+      var swap2 = arr[largest];
+
+      arr[index] = swap2;
+      arr[largest] = swap1;
+      await delay(animationSpeed*2)
+      setArray([...arr])
+      await delay(animationSpeed*2)
+      document.getElementById(index).style.backgroundColor = "#343434"
+      if (leftNode < length) {
+        document.getElementById(leftNode).style.backgroundColor = "#343434"
+      }
+      if (rightNode < length) {
+        document.getElementById(rightNode).style.backgroundColor = "#343434"
+      }
+      setText("")
+      await delay(animationSpeed*2)
+      await heapify(arr, length, largest);
+    } else {
+      setText("")
+      document.getElementById(index).style.backgroundColor = "#343434"
+      if (leftNode < length) {
+        document.getElementById(leftNode).style.backgroundColor = "#343434"
+      }
+      if (rightNode < length) {
+        document.getElementById(rightNode).style.backgroundColor = "#343434"
+      }
+    }
+  }
+
+
   const camelize = (str) => {
     return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
       return index === 0 ? word.toLowerCase() : word.toUpperCase();
@@ -281,7 +367,8 @@ const SortingVisalizer = () => {
     selectionSort,
     mergeSort,
     insertionSort,
-    quickSort
+    quickSort,
+    heapSort
   }
   const sizeArray = windowWidth > 750 ? [5, 10, 25] : [5, 10]
   return (
@@ -289,6 +376,7 @@ const SortingVisalizer = () => {
       <h1>Sorting Visualizer <BiSort /></h1>
       <div className='options'>
         {algo.name === "Insertion Sort" && <div className='temp'>Temp :{temp}</div>}
+        {algo.name === "Heap Sort" && <div className='temp'>{text}</div>}
         <div id="algo">
           {theory.map((algorithm) => {
             return (<button key={algorithm.name} onClick={() => { setAlgo(algorithm) }} className={algorithm.name === algo.name ? "selected-btn" : undefined} disabled={startSorting}>{algorithm.name}</button>)

@@ -45,6 +45,16 @@
         colours:{
             orange:"subarray being merged"
         }
+    },
+    {
+        name:"Heap Sort",
+        timeComp:"O( nlog ( n ) )",
+        spaceComp:"O( 1 )",
+        colours:{
+            yellow:"Parent node (node being heapified)",
+            orange:"Child node",
+            green:"Sorted Part"
+        }
     }
 ]
 export default theory

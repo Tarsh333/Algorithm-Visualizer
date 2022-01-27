@@ -109,6 +109,7 @@ h1{
     left: 45%;
     font-size: 25px;
     font-weight: bold;
+    text-align: center;
 }
 @media screen and (max-width:830px) {
     .info,.options,.size-option select{
